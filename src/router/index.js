@@ -8,6 +8,9 @@ import VueRouter from 'vue-router'
 // 引入Login组件
 import Login from '@/views/login/Login.vue'
 
+// 引入Home组件
+import Home from '@/views/home/Home.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -19,7 +22,8 @@ const router = new VueRouter({
     // 跳转方便一些的两种方式：$router.push('/login') 或者 $router.push({name:'login'})
     // path:'/xxx' 是指地址栏跳转的锚点信息
     // component: 组件模块
-    { path: '/login', name: 'login', component: Login }
+    { path: '/login', name: 'login', component: Login },
+    { path: '/', name: 'home', component: Home }
   ]
 })
 
