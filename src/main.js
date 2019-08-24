@@ -15,6 +15,11 @@ import router from '@/router'
   当在同一目录中有index.js、index.vue、index.json这三种文件时，会有优先级，只是默认这三种文件
 */
 
+// 配置引入axios模块
+import axios from 'axios'
+// 挂axios
+Vue.prototype.$http = axios
+
 Vue.config.productionTip = false
 
 // 注册构造器ElementUI

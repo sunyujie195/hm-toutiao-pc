@@ -22,7 +22,7 @@
                     <el-checkbox :value="true">我已阅读并同意用户协议和隐私条款</el-checkbox>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" style="width:100%" @click="loginMit">登录</el-button>
+                    <el-button type="primary" style="width:100%" @click="loginMit()">登录</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -84,6 +84,16 @@ export default {
         // 判断valid是否为真，校验成功
         if (valid) {
           // 校验成功，则调用登录接口进行登录
+          // 第二个参数this.loginForm要包括表单内所有数据字段
+          this.$http.post('http://ttapi.research.itcast.cn/mp/v1_0/authorizations', this.loginForm)
+            .then(res => {
+              // 登录成功则跳转首页
+              this.$router.push('/')
+            })
+            .catch(() => {
+              // 登录失败则提示错误
+              this.$message.error('手机号或验证码错误')
+            })
         }
       })
     }
