@@ -11,6 +11,9 @@ import Login from '@/views/login/Login.vue'
 // 引入Home组件
 import Home from '@/views/home/Home.vue'
 
+// 引入Welcome组件
+import Welcome from '@/views/welcome/Welcome.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -23,7 +26,16 @@ const router = new VueRouter({
     // path:'/xxx' 是指地址栏跳转的锚点信息
     // component: 组件模块
     { path: '/login', name: 'login', component: Login },
-    { path: '/', name: 'home', component: Home }
+    {
+      path: '/',
+      // 父路由和子路由都有name时，会有警告，所以按照path走就不需要父路由name值
+      // name: 'home',
+      component: Home,
+      // 给Home挂二级路由Welcome
+      children: [
+        { path: '/', name: 'welcome', component: Welcome }
+      ]
+    }
   ]
 })
 
