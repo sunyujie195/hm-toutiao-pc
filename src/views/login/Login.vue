@@ -31,6 +31,9 @@
 </template>
 
 <script>
+// 导入store模块
+import Store from '@/store/index.js'
+
 export default {
 
   // // 渲然完毕时，获取div的dom对象
@@ -54,8 +57,8 @@ export default {
 
     return {
       loginForm: {
-        mobile: '',
-        code: ''
+        mobile: '18301129680',
+        code: '246810'
       },
 
       // 表单校验规则对象 --- 就是校验data中的表单数据 字段
@@ -87,6 +90,12 @@ export default {
           // 第二个参数this.loginForm要包括表单内所有数据字段
           this.$http.post('http://ttapi.research.itcast.cn/mp/v1_0/authorizations', this.loginForm)
             .then(res => {
+              console.log(res) // {data: {…}, status: 201, statusText: "CREATED", headers: {…}, config: {…}}
+              // 得到的res是一个响应对象，res.data是响应主体。 res.data.data用户信息 中包含token
+              // 创建一个store模块操作 用户信息的 储存、获取、删除 -- 当登录成功时，调用函数
+              // 调用之前要导入模块-- 当登录成功时，调用存储函数
+              Store.setUser(res.data.data)
+
               // 登录成功则跳转首页
               this.$router.push('/')
             })
