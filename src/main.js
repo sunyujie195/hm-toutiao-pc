@@ -16,7 +16,9 @@ import router from '@/router'
 */
 
 // 配置引入axios模块
-import axios from 'axios'
+// import axios from 'axios'
+// 现在axios已经配置在api中
+import axios from '@/api'
 // 挂axios
 Vue.prototype.$http = axios
 
