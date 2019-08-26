@@ -84,9 +84,10 @@ export default {
   methods: {
     loginMit () {
       // 调用 validate 函数对整体表单校验
-      this.$refs.loginRef.validate((valid) => {
+      this.$refs.loginRef.validate(async (valid) => {
         // 判断valid是否为真，校验成功
         if (valid) {
+          /*
           // 校验成功，则调用登录接口进行登录
           // 第二个参数this.loginForm要包括表单内所有数据字段
           this.$http.post('http://ttapi.research.itcast.cn/mp/v1_0/authorizations', this.loginForm)
@@ -104,6 +105,28 @@ export default {
               // 登录失败则提示错误
               this.$message.error('手机号或验证码错误')
             })
+            */
+
+          /* 将以上的功能用 async & await 语法实现:
+              1.首先获取登录成功后的用户信息数据：    res解构赋值后就是={data:{data:'用户信息',message:'提示'}}
+              2.当获取的数据失败时，要有错误的提示信息
+              3.使用js基础语法==try{ 可能要报错的代码 }catch(exception:异常){ 获取到异常报错(处理异常) }==去捕获异常(错误)，可以使用在任何报错的地方
+              await是获取promise的成功结果，失败使用try{}catch(exception){}进行处理。
+              await的外层函数必须加上async
+          */
+          console.log(valid)
+          try {
+            // 校验成功，则调用登录接口进行登录功能
+            // const res = await this.$http.post('authorizations', this.loginForm)
+            const { data: { data } } = await this.$http.post('authorizations', this.loginForm)
+            // 当登录成功时，调用存储函数
+            Store.setUser(data)
+            // 登录成功则跳转首页
+            this.$router.push('/')
+          } catch (error) {
+            // 登录失败则提示错误
+            this.$message.error('手机号或验证码错误')
+          }
         }
       })
     }
