@@ -1,0 +1,151 @@
+// 后台管理首页
+<template>
+<!-- 基本布局 -->
+    <el-container class="my-container">
+
+        <!--导航菜单组件 -->
+        <el-aside :width="isCollapse?'64px':'200px' ">
+            <!-- 导航菜单logo       给logo属性绑定v-bind的class做切换效果-->
+            <div class="logo" :class="{minlogo:isCollapse}"></div>
+                <el-menu
+                    default-active="/"
+                    class="el-menu-vertical-demo"
+                    background-color="#002033"
+                    text-color="#fff"
+                    active-text-color="#ffd04b"
+                    :collapse="isCollapse"
+                    :collapse-transition="false"
+                    router
+                >
+                <!-- 使用属性时，若是布尔类型的router，有属性代码则true，无则false
+                    router布尔值是激活以 index 作为 path 进行路由跳转-->
+                    <el-menu-item index="/">
+                        <i class="el-icon-s-home"></i>
+                        <span slot="title">首页</span>
+                    </el-menu-item>
+                    <el-menu-item index="/article">
+                        <i class="el-icon-document"></i>
+                        <span slot="title">内容管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="/image">
+                        <i class="el-icon-picture"></i>
+                        <span slot="title">素材管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="/publish">
+                        <i class="el-icon-s-promotion"></i>
+                        <span slot="title">发布文章</span>
+                    </el-menu-item>
+                    <el-menu-item index="/comment">
+                        <i class="el-icon-chat-dot-round"></i>
+                        <span slot="title">评论管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="/fans">
+                        <i class="el-icon-present"></i>
+                        <span slot="title">粉丝管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="/setting">
+                        <i class="el-icon-setting"></i>
+                        <span slot="title">个人设置</span>
+                    </el-menu-item>
+                </el-menu>
+        </el-aside>
+
+        <el-container>
+            <!-- 头部布局 -->
+            <el-header>
+                <span @click="toggleAside()" class="icon el-icon-s-fold"></span>
+                <span class="text"> 江苏传智播客科技教育有限公司</span>
+                <!-- 下拉菜单组件-->
+                <el-dropdown class="my-dropdown">
+                    <span class="el-dropdown-link">
+                        <img class="avatar" src="../../assets/images/avatar.jpg" alt="">
+                        <span class="name"> 用户名称</span>
+                        <i class="el-icon-arrow-down el-icon--right"></i>
+                    </span>
+                    <!-- slot是vue基础知识==插槽意思 -->
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item icon="el-icon-setting">个人设置</el-dropdown-item>
+                        <el-dropdown-item icon="el-icon-unlock">退出登录</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-header>
+
+            <!-- 主题布局：渲染展示二级路由页面 -->
+            <el-main>
+                <router-view></router-view>
+            </el-main>
+
+        </el-container>
+    </el-container>
+</template>
+
+<script>
+export default {
+  // 声明数据：让导航菜单默认展开
+  data () {
+    return {
+      isCollapse: false
+    }
+  },
+  methods: {
+    toggleAside () {
+      // 切换侧边栏展开与收起
+      // 数据 isCollapse 默认值false 展开意思
+      // 通过这个数据的状态去切换 侧边栏展开与收起 状态
+      this.isCollapse = !this.isCollapse
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.my-container{
+    width: 100%;
+    height: 100%;
+    position:absolute;
+    top: 0;
+    left: 0;
+    // 导航菜单
+    .el-aside{
+        background: #002033;
+        .logo{
+           width: 100%;
+           height: 60px;
+           background: #002244 url(../../assets/images/logo_admin.png) no-repeat center / 140px auto;
+        }
+        .minlogo{
+            background-image: url(../../assets/images/logo_admin_01.png);
+            background-size: 36px auto;
+        }
+        .el-menu{
+            border-right: none;
+        }
+    }
+    // 头部
+    .el-header{
+        border-bottom: 1px solid #ddd;
+        line-height: 60px;
+        .icon {
+            font-size: 24px;
+            vertical-align: middle;
+        }
+        .text{
+            vertical-align: middle;
+        }
+        .my-dropdown{
+            float:right;
+            .avatar{
+                width: 30px;
+                height: 30px;
+                vertical-align:middle;
+            }
+            .name{
+                color:#333;
+                // bold 有加粗的意思
+                font-weight: bold;
+                vertical-align:middle;
+            }
+        }
+    }
+}
+</style>
