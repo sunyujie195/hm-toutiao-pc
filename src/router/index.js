@@ -17,6 +17,9 @@ import Welcome from '@/views/welcome/Welcome.vue'
 // 引入404组件
 import NotFound from '@/views/404/404.vue'
 
+// 引入store模块-供前置守卫使用
+import store from '@/store'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -42,6 +45,23 @@ const router = new VueRouter({
     // 404页面，path是*意思是，当所有页面都有错误时，才会走404页面
     { path: '*', name: '404', component: NotFound }
   ]
+})
+
+// 登录页面访问权限控制-全局前置守卫-3种判断情况
+router.beforeEach((to, from, next) => {
+  // 1.当是在访问登录页面的路径，就放行
+  // if (to.path === '/login') return next()
+  // 2.不是登录页面且没有登录(没有获取到token值时)就访问后台，需拦截到登录页面登录才行
+  // if (!store.getUser().token) return next('/login')
+  // 3.其它情况时，放行
+  // next()
+
+  // 综合
+  if (to.path !== '/login' && !store.getUser().token) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 // 导出router
