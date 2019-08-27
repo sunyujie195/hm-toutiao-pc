@@ -20,6 +20,9 @@ import NotFound from '@/views/404/404.vue'
 // 引入store模块-供前置守卫使用
 import store from '@/store'
 
+// 引入article组件
+import Article from '@/views/article/Article.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -39,7 +42,9 @@ const router = new VueRouter({
       component: Home,
       // 给Home挂二级路由Welcome
       children: [
-        { path: '/', name: 'welcome', component: Welcome }
+        { path: '/', name: 'welcome', component: Welcome },
+        // 内容管理路由
+        { path: '/article', name: 'article', component: Article }
       ]
     },
     // 404页面，path是*意思是，当所有页面都有错误时，才会走404页面
