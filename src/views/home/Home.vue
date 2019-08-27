@@ -56,7 +56,8 @@
                 <span @click="toggleAside()" class="icon el-icon-s-fold"></span>
                 <span class="text"> 江苏传智播客科技教育有限公司</span>
                 <!-- 下拉菜单组件-->
-                <el-dropdown class="my-dropdown">
+                <el-dropdown class="my-dropdown" @command="clickItem">
+                    <!-- 给最高父组件绑定监听点击事件 => clickItem是回调函数 => clickItem的后面不加括号()，加上是表示不传任何参数;不加上表示默认有传参 -->
                     <span class="el-dropdown-link">
                         <img class="avatar" src="photo" alt="">
                         <span class="name"> {{name}}</span>
@@ -64,8 +65,11 @@
                     </span>
                     <!-- slot是vue基础知识==插槽意思 -->
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item icon="el-icon-setting" @click.native="setting()">个人设置</el-dropdown-item>
-                        <el-dropdown-item icon="el-icon-unlock" @click.native="loginOut()">退出登录</el-dropdown-item>
+                        <!-- <el-dropdown-item icon="el-icon-setting" @click.native="setting()">个人设置</el-dropdown-item> -->
+                        <!-- <el-dropdown-item icon="el-icon-unlock" @click.native="loginOut()">退出登录</el-dropdown-item> -->
+                        <el-dropdown-item icon="el-icon-setting" command="setting">个人设置</el-dropdown-item>
+                        <el-dropdown-item icon="el-icon-unlock" command="loginOut">退出登录</el-dropdown-item>
+                        <!-- 给回调函数clickItem传参数 =>  选项的指令=>command="setting"或是command="loginOut" -->
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-header>
@@ -107,6 +111,14 @@ export default {
       // 通过这个数据的状态去切换 侧边栏展开与收起 状态
       this.isCollapse = !this.isCollapse
     },
+
+    // 使用element-ui实现给组件监听点击过选项操作
+    clickItem (command) {
+      console.log(command) // setting、 loginOut
+      this[command]()
+      // []中的 command表示调用的方法名 == 后面加上()表示调用方法，不加上()获取的只是方法或方法体
+    },
+
     // 个人设置
     setting () {
       this.$router.push('/setting')
