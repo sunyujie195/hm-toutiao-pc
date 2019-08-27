@@ -58,14 +58,14 @@
                 <!-- 下拉菜单组件-->
                 <el-dropdown class="my-dropdown">
                     <span class="el-dropdown-link">
-                        <img class="avatar" src="../../assets/images/avatar.jpg" alt="">
-                        <span class="name"> 用户名称</span>
+                        <img class="avatar" src="photo" alt="">
+                        <span class="name"> {{name}}</span>
                         <i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <!-- slot是vue基础知识==插槽意思 -->
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item icon="el-icon-setting">个人设置</el-dropdown-item>
-                        <el-dropdown-item icon="el-icon-unlock">退出登录</el-dropdown-item>
+                        <el-dropdown-item icon="el-icon-setting" @click.native="setting()">个人设置</el-dropdown-item>
+                        <el-dropdown-item icon="el-icon-unlock" @click.native="loginOut()">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-header>
@@ -80,19 +80,43 @@
 </template>
 
 <script>
+// 引入store模块
+import store from '@/store'
+
 export default {
   // 声明数据：让导航菜单默认展开
   data () {
     return {
-      isCollapse: false
+      isCollapse: false,
+      name: '',
+      photo: ''
     }
   },
+
+  // Vue实例创建完,获取本地存储数据
+  created () {
+    const user = store.getUser()
+    this.name = user.name
+    this.photo = user.photo
+  },
+
   methods: {
     toggleAside () {
       // 切换侧边栏展开与收起
       // 数据 isCollapse 默认值false 展开意思
       // 通过这个数据的状态去切换 侧边栏展开与收起 状态
       this.isCollapse = !this.isCollapse
+    },
+    // 个人设置
+    setting () {
+      this.$router.push('/setting')
+    },
+    // 退出登录
+    loginOut () {
+      // 1️⃣删除用户信息
+      store.delUser()
+      // 2️⃣跳转登录页面
+      this.$router.push('/login')
     }
   }
 }
