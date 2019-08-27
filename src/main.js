@@ -19,6 +19,12 @@ import router from '@/router'
 // import axios from 'axios'
 // 现在axios已经配置在api中
 import axios from '@/api'
+
+// 引入封装插件   plug-in是插件意思
+import MyPlugin from '@/components/index.js'
+// 注册封装插件
+Vue.use(MyPlugin)
+
 // 挂axios
 Vue.prototype.$http = axios
 

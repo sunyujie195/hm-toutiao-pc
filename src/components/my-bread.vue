@@ -1,4 +1,4 @@
-// 全局封装面包屑组件
+// 封装面包屑组件
 
 <template>
     <div class='container'>
@@ -14,6 +14,8 @@
 
 <script>
 export default {
+  // 在组件里定义一个name属性，给组件取名称，供全局调用
+  name: 'my-bread'
 }
 </script>
 
