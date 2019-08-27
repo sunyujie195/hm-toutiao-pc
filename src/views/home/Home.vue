@@ -7,8 +7,17 @@
         <el-aside :width="isCollapse?'64px':'200px' ">
             <!-- 导航菜单logo       给logo属性绑定v-bind的class做切换效果-->
             <div class="logo" :class="{minlogo:isCollapse}"></div>
+            <!-- 激活导航菜单 -- 当你点击哪个页面，就激活什么菜单 -- 要通过 跳转的路径 去判断激活了当前哪个菜单(页面)
+               怎么获取当前路径？  ==>  :default-active="当前路径"  动态绑定当前路径。
+                    $router对象 和 $route对象 的区别：
+                        $router 对象调用的是函数 ---- this.$router.push('/')
+                        $route 对象调用的是数据 ---- this.$route.query / params
+                            query获取的是地址栏？后面的 key=value 的传参  -- this.$route.query.key
+                            params获取的是地址栏 路径(user/:id === user/100) 上的传参  -- this.$route.params.id
+                            $route.path 是当前路径 ==> :default-active="$route.path"
+             -->
                 <el-menu
-                    default-active="/"
+                    :default-active="$route.path"
                     class="el-menu-vertical-demo"
                     background-color="#002033"
                     text-color="#fff"

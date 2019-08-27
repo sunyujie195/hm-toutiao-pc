@@ -5,10 +5,10 @@
         <el-card class="box-card">
             <!-- 筛选项卡片的头部 -->
             <div slot="header">
-                <el-breadcrumb separator-class="el-icon-arrow-right">
-                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>内容管理</el-breadcrumb-item>
-                </el-breadcrumb>
+
+                <!-- 使用封装的面包屑组件 -->
+                <my-bread>内容管理</my-bread>
+
             </div>
             <!-- 筛选项卡片的表单 -->
             <el-form label-width="80px" size="samll">
@@ -45,6 +45,10 @@
                         end-placeholder="结束日期">
                     </el-date-picker>
                 </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary">筛选</el-button>
+                </el-form-item>
             </el-form>
         </el-card>
 
@@ -65,7 +69,13 @@
 </template>
 
 <script>
+// 引入myBread组件
+import MyBread from '@/components/my-bread.vue'
+
 export default {
+  // 注册组件
+  components: { MyBread },
+
   data () {
     return {
     // 提交请求给后台的参数对象
@@ -98,6 +108,9 @@ export default {
 <style lang="less" scoped>
 .el-card{
     margin-bottom: 20px;
+}
+.el-button{
+    font-size: 12px;
 }
 .el-pagination{
     text-align: center;
