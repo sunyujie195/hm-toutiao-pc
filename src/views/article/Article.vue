@@ -88,19 +88,32 @@ export default {
       },
 
       // 频道下拉框中的数据
-      channelOptions: [
-        { id: 1, name: 'php' }
-      ],
+      channelOptions: [],
 
       // 日期数据  格式数组 [起始日期，结束日期]
       dataArr: [],
 
       //  表格数据
-      tableData: [
-        { date: '2016-05-02', name: '王小虎', address: '上海市普陀区金沙江路 1518 弄' }
-      ]
+      articleData: []
 
     }
+  },
+
+  created () {
+    // 调用频道后台数据
+    this.getchannelOptions()
+  },
+
+  methods: {
+    // 获取频道后台数据
+    async getchannelOptions () {
+      // 看api文档拿到最后的数据 => data.channels[ {id, name}]
+      // 使用 async & await 发送axios请求
+      const { data: { data } } = await this.$http.get('channels')
+      // 赋值给频道下拉框中的数据
+      this.channelOptions = data.channels
+    }
+
   }
 }
 </script>
