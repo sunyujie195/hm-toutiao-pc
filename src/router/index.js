@@ -23,6 +23,9 @@ import store from '@/store'
 // 引入article组件
 import Article from '@/views/article/Article.vue'
 
+// 引入test组件
+import Test from '@/views/test/index.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -35,6 +38,8 @@ const router = new VueRouter({
     // path:'/xxx' 是指地址栏跳转的锚点信息
     // component: 组件模块
     { path: '/login', name: 'login', component: Login },
+    // 测试test路由
+    { path: '/test', name: 'test', component: Test },
     {
       path: '/',
       // 父路由和子路由都有name时，会有警告，所以按照path走就不需要父路由name值
