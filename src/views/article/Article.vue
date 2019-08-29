@@ -38,7 +38,7 @@
 
                 <el-form-item label="日期：">
                     <el-date-picker
-                        v-model="dataArr"
+                        v-model="dateArr"
                         type="daterange"
                         range-separator="至"
                         start-placeholder="开始日期"
@@ -57,10 +57,56 @@
             <!-- 筛选结果头部 -->
             <div slot="header">根据筛选条件共查询到 0 条结果：</div>
             <!-- 筛选结果表格 -->
-            <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="date" label="日期" width="180"></el-table-column>
-                <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
-                <el-table-column prop="address" label="地址"></el-table-column>
+            <el-table :data="articleData">
+                <!-- :data="articleData"给 table 动态绑定data对象数组
+                  prop取得是遍历时每一条数据中data背后的值 => prop 作用把字段背后的值 渲染在列位置 => 列组件用 prop属性 来对应对象中的键名即可填入数据
+                  封面图片是 data.data.results.0.cover.images[0] 默认取第一张图片=>得到的是图片的路径地址字符串
+                  但是需要的图片img，所以用slot额外给封面内容插入渲染图片 => 自定义列表格
+                  渲染图片时需要动态绑定数据=>使用作用域插槽
+                -->
+                <el-table-column prop="date" label="封面">
+                    <!-- 自定义列表格模板 -->
+                    <template slot-scope="scope">
+                        <!-- row是表示当前行 => 在组件内部遍历articleData数组的每一项，在slot上用row传入内容，row相当于数组的每一条数据-->
+                        <el-image :src="scope.row.cover.images[0]" style="width:160px;heigth:100px;border:1px solid #ddd" fit="contain">
+                            <!-- fit是确定图片平铺容器框方式 ==> fill填满、contain包含、cover铺满容器,等比例缩放,不会压缩、none没有一个、scale-down按比例缩减 -->
+                            <div slot="error" class="image-slot">
+                                <!-- 处理加载失败图片 -->
+                                <img src="../../assets/images/error.gif" width="160px" height="100px" alt="">
+                            </div>
+                        </el-image>
+                    </template>
+                </el-table-column>
+
+                <el-table-column prop="title" label="标题"></el-table-column>
+
+                <el-table-column label="状态">
+                    <!-- 这里的prop不能显示自定义内容 -->
+                    <template slot-scope="scope">
+                        <!-- tag标签组件：不同颜色标签代表不同的语境、不同的状态
+                            判断：当接收作用域插槽上所有绑定的数据scope对象中row.status为0或1，2，3，4时,对应的就是谁的相应的状态
+                            状态是 data.data.results.0.status
+                        -->
+                        <el-tag v-if="scope.row.status === 0" type="info">草稿</el-tag>
+                        <el-tag v-if="scope.row.status === 1">待审核</el-tag>
+                        <el-tag v-if="scope.row.status === 2" type="success">审核通过</el-tag>
+                        <el-tag v-if="scope.row.status === 3" type="warning">审核失败</el-tag>
+                        <el-tag v-if="scope.row.status === 4" type="danger">已删除</el-tag>
+                    </template>
+                </el-table-column>
+
+                <el-table-column prop="pubdate" label="发布日期"></el-table-column>
+
+                <el-table-column label="操作" width="120px">
+                    <!-- 增加width将操作列靠右边，其它列不加width让其自定义宽度 -->
+                    <template slot-scope="scope">
+                            <!-- plain定义朴素button -->
+                            <el-button type="primary" icon="el-icon-edit" circle plain></el-button>
+                            <el-button type="danger" icon="el-icon-delete" @click="delArticle(scope.row.id)" circle plain></el-button>
+                            <!-- 这里添加事件@click="delArticle(scope.row.id)"做删除功能传入id，上面插槽定义变量对象scope，下面要使用才行 -->
+                    </template>
+                </el-table-column>
+
             </el-table>
             <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
         </el-card>
@@ -81,17 +127,19 @@ export default {
     // 提交请求给后台的参数对象
     // 通过axios提交给后台，status字段的值为null，这项数据不会提交
       reqParams: {
-        status: null,
-        channel_id: null,
-        begin_pubdate: null,
-        end_pubdate: null
+        status: null, // 文章状态
+        channel_id: null, // 频道id
+        begin_pubdate: null, // 起始时间
+        end_pubdate: null, // 截止时间
+        page: 1, // 页码数
+        per_page: 20 // 每一页的数量
       },
 
       // 频道下拉框中的数据
       channelOptions: [],
 
-      // 日期数据  格式数组 [起始日期，结束日期]
-      dataArr: [],
+      // 日期数据=>格式数组 [起始日期，结束日期]
+      dateArr: [],
 
       //  表格数据
       articleData: []
@@ -102,16 +150,28 @@ export default {
   created () {
     // 调用频道后台数据
     this.getchannelOptions()
+    // 调用文章列表数据
+    this.getarticleData()
   },
 
   methods: {
     // 获取频道后台数据
     async getchannelOptions () {
-      // 看api文档拿到最后的数据 => data.channels[ {id, name}]
+      // 看api文档返回的最后的数据 => data.channels[ {id, name}]
       // 使用 async & await 发送axios请求
       const { data: { data } } = await this.$http.get('channels')
       // 赋值给频道下拉框中的数据
       this.channelOptions = data.channels
+    },
+
+    // 获取表格中的文章列表
+    async getarticleData () {
+      // data.results 是文章列表
+      // 在post请求 =>  post(url,数据)
+      // 在get请求 =>  get(url,{params:数据})
+      const { data: { data } } = await this.$http.get('articles', { params: this.reqParams })
+      // 赋值
+      this.articleData = data.results
     }
 
   }
