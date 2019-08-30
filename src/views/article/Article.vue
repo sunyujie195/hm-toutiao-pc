@@ -52,10 +52,10 @@
             </el-form>
         </el-card>
 
-        <!-- 筛选结果 -->
+        <!------------------------------------------------------------- 筛选结果 -->
         <el-card>
-            <!-- 筛选结果头部 -->
-            <div slot="header">根据筛选条件共查询到 0 条结果：</div>
+            <!-- 筛选结果头部                   这里渲染文章总条数-->
+            <div slot="header">根据筛选条件共查询到 {{total}} 条结果：</div>
             <!-- 筛选结果表格 -->
             <el-table :data="articleData">
                 <!-- :data="articleData"给 table 动态绑定data对象数组
@@ -108,7 +108,20 @@
                 </el-table-column>
 
             </el-table>
-            <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+            <!--------------------------------------------- 分页组件   :total="total"重新赋值-->
+            <el-pagination
+                background
+                layout="prev, pager, next"
+                :total="total"
+                :page-size="reqParams.per_page"
+                :current-page="reqParams.page"
+                @current-change="changePage"
+            ></el-pagination>
+            <!-- page-size：每页显示条目个数
+                 current-page：(显示)当前页码
+                 两项动态绑定，不写死，以便可以从声明的所有数据对象reqParams中获取
+              点击切换页码，就是改变页码事件current-change，给当前页码current-page绑定click事件
+            -->
         </el-card>
 
     </div>
@@ -142,8 +155,10 @@ export default {
       dateArr: [],
 
       //  表格数据
-      articleData: []
+      articleData: [],
 
+      // 文章总条数(最开始没有数据)
+      total: 0
     }
   },
 
@@ -172,6 +187,16 @@ export default {
       const { data: { data } } = await this.$http.get('articles', { params: this.reqParams })
       // 赋值
       this.articleData = data.results
+
+      // 在获取文章列表时拿到文章的总条数(data.total_count)，赋值给分页
+      this.total = data.total_count
+    },
+
+    // 改变页码触发事件函数
+    changePage (num) {
+      // 将改变的页码重新赋值给页码数据，然后更新文章列表
+      this.reqParams.page = num
+      this.getarticleData()
     }
 
   }
