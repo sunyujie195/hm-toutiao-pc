@@ -7,6 +7,19 @@ import store from '@/store'
 // 引入router文件
 import router from '@/router'
 
+// 导入json-bigint模块包
+import JSONBIG from 'json-bigint'
+
+// 用axios配置
+axios.defaults.transformResponse = [(data) => {
+  // 严谨的处理后端在响应数据时，可能出现的没有响应的情况
+  try {
+    return JSONBIG.parse(data)
+  } catch (error) {
+    return data
+  }
+}]
+
 // 请求配置-需要两个条件
 // 1.基准路径(公共根地址)
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'

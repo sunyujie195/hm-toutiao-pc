@@ -87,6 +87,8 @@
                 <el-table-column label="状态">
                     <!-- 这里的prop不能显示自定义内容 -->
                     <template slot-scope="scope">
+                      <!-- {{scope.row.id}} 这是测试 数字最大安全值 是否转换成功 -->
+
                         <!-- tag标签组件：不同颜色标签代表不同的语境、不同的状态
                             判断：当接收作用域插槽上所有绑定的数据scope对象中row.status为0或1，2，3，4时,对应的就是谁的相应的状态
                             状态是 data.data.results.0.status
@@ -226,6 +228,26 @@ export default {
       this.reqParams.page = 1
       // 3.根据新条件筛选数据，去重新获取文章数据
       this.getarticleData()
+    },
+
+    // 删除功能
+    delArticle (id) {
+      // 1.确认框
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 2.点击确认发送axios请求根据id删除当前行文章    ==> Method： delete 删除属性
+        // articles/:target地址url  => :target是id  => vue基础学习axios时遇到过
+        await this.$http.delete(`articles/${id}`)
+        // 提示
+        this.$message.success('删除成功!')
+        // 删除成功后再重新获取文章列表数据
+        this.getarticleData()
+      }).catch(() => {
+        // 3.点击取消
+      })
     }
 
   }
