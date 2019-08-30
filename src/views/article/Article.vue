@@ -25,8 +25,8 @@
                 </el-form-item>
 
                 <el-form-item label="频道：">
-                    <!-- Select 选择器 -->
-                    <el-select v-model="reqParams.channel_id" placeholder="请选择">
+                    <!-- Select 选择器         clearable是清空选项-->
+                    <el-select v-model="reqParams.channel_id" placeholder="请选择" clearable>
                         <el-option
                         v-for="item in channelOptions"
                         :key="item.id"
@@ -42,12 +42,16 @@
                         type="daterange"
                         range-separator="至"
                         start-placeholder="开始日期"
-                        end-placeholder="结束日期">
+                        end-placeholder="结束日期"
+                        @change="changeDate"
+                        value-format="yyyy-MM-dd"
+                        >
+                        <!-- 给选择日期范围后触发的函数(事件)：value-format是组件绑定的值，格式与绑定值要一致 -->
                     </el-date-picker>
                 </el-form-item>
 
                 <el-form-item>
-                    <el-button type="primary">筛选</el-button>
+                    <el-button type="primary" @click="search">筛选</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -196,6 +200,31 @@ export default {
     changePage (num) {
       // 将改变的页码重新赋值给页码数据，然后更新文章列表
       this.reqParams.page = num
+      this.getarticleData()
+    },
+
+    // 选择日期范围后触发的函数
+    changeDate (valueArr) {
+      // 1.首先valueArr是选中的日期范围值  [起始日期，结束日期]
+      // 2.选择完后就清空功能 valueArr === null
+      if (valueArr) {
+        this.reqParams.begin_pubdate = valueArr[0]
+        this.reqParams.end_pubdate = valueArr[1]
+      } else {
+        this.reqParams.begin_pubdate = null
+        this.reqParams.end_pubdate = null
+      }
+    },
+
+    // 点击筛选按钮触发事件
+    search () {
+      // 1.频道选项,清空功能,清空之后的值是 "" 而不是null，所以要赋值
+      if (this.reqParams.channel_id === '') {
+        this.reqParams.channel_id = null
+      }
+      // 2.将页码重置为1
+      this.reqParams.page = 1
+      // 3.根据新条件筛选数据，去重新获取文章数据
       this.getarticleData()
     }
 
