@@ -34,7 +34,19 @@
       </div>
 
       <!-- 分页 -->
-      <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="reqParams.per_page"
+        :current-page="reqParams.page"
+        @current-change="changePager"
+        ></el-pagination>
+        <!-- page-size：每页显示条目个数
+             current-page：(显示)当前页码
+            两项动态绑定，不写死，以便可以从声明的所有数据对象reqParams中获取
+            点击切换页码，就是改变页码事件current-change，给当前页码current-page绑定click事件
+        -->
     </el-card>
   </div>
 </template>
@@ -50,8 +62,12 @@ export default {
         page: 1,
         per_page: 10
       },
+
       // 图片列表数据
-      imageData: []
+      imageData: [],
+
+      // 图片总张数(最开始没有数据)
+      total: 0
     }
   },
 
@@ -67,6 +83,16 @@ export default {
       const { data: { data } } = await this.$http.get('user/images', { params: this.reqParams })
       // 赋值给图片列表数据
       this.imageData = data.results
+
+      // 在获取文章列表时拿到文章的总条数(data.total_count)，赋值给分页
+      this.total = data.total_count
+    },
+
+    // 改变页码触发事件函数
+    changePager (newPage) {
+      // 将改变的页码重新赋值给页码数据，然后更新图片列表
+      this.reqParams.page = newPage
+      this.getimageData()
     }
   }
 }
