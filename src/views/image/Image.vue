@@ -8,7 +8,7 @@
       </div>
 
       <!-- 按钮组 -->
-      <el-radio-group v-model="reqParams.collect" size="small">
+      <el-radio-group v-model="reqParams.collect" size="small" @change="toggleCollect">
         <el-radio-button label="false">全部</el-radio-button>
         <el-radio-button label="true">收藏</el-radio-button>
       </el-radio-group>
@@ -26,9 +26,10 @@
             <!-- 动态绑定：url表示图片地址 -->
             <img :src="item.url" alt="">
             <div class="footer">
-                <!-- class属性绑定：判断当前图片是否收藏,并将当前已经收藏的图片渲染出来-->
-                <span class="el-icon-star-off" :class="{red:item.is_collected}"></span>
-                <span class="el-icon-delete"></span>
+                <!-- :class="{red:item.is_collected}"  class属性绑定：判断当前图片是否收藏,并将当前已经收藏的图片渲染出来-->
+                <span class="el-icon-star-off" :class="{red:item.is_collected}" @click="changeStatus(item)"></span>
+                <!-- 删除图片函数 传入id-->
+                <span class="el-icon-delete" @click="delImage(item.id)"></span>
             </div>
         </div>
       </div>
@@ -41,11 +42,13 @@
         :page-size="reqParams.per_page"
         :current-page="reqParams.page"
         @current-change="changePager"
+        hide-on-single-page
         ></el-pagination>
         <!-- page-size：每页显示条目个数
              current-page：(显示)当前页码
             两项动态绑定，不写死，以便可以从声明的所有数据对象reqParams中获取
             点击切换页码，就是改变页码事件current-change，给当前页码current-page绑定click事件
+          hide-on-single-page表示只有一页时是否隐藏分页组件，false为隐藏
         -->
     </el-card>
   </div>
@@ -93,7 +96,46 @@ export default {
       // 将改变的页码重新赋值给页码数据，然后更新图片列表
       this.reqParams.page = newPage
       this.getimageData()
+    },
+
+    // 切换全部与收藏按钮触发事件
+    toggleCollect () {
+      // 让每次点击按钮筛选后，页码都重置到1
+      this.reqParams.page = 1
+      // 获取图片列表数据
+      this.getimageData()
+    },
+
+    // 点击收藏图标触发事件并发送put请求 -- 改变收藏状态
+    async changeStatus (item) {
+      // put请求传参 == collect是否收藏,false-取消收藏,true-添加收藏 == collect: !item.is_collected 取反,因为true是收藏
+      const { data: { data } } = await this.$http.put(`user/images/${item.id}`, { collect: !item.is_collected })
+      // 发送成功提示消息   data.collect 必须(是否收藏)
+      this.$message.success(data.collect ? '添加收藏成功' : '取消收藏成功')
+      // 然后更新列表 ==> 重新获取数据(刷新)---->按照后台的排序会更新图片的顺序----->图片的位置改变---->用户体验不好
+      // 只用更新当图片的状态即可
+      item.is_collected = data.collect
+    },
+
+    // 点击删除图标删除图片触发的事件 -- 根据id发送delete请求弹出确认框
+    delImage (id) {
+      // 确认框
+      this.$confirm('老铁，此操作将永久删除该图片, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 删除成功发送delete请求
+        await this.$http.delete(`user/images/${id}`)
+        // 删除成功提示消息
+        this.$message.success('删除图片成功')
+        // 更新图片列表数据
+        this.getimageData()
+      }).catch(() => {
+        //  取消删除
+      })
     }
+
   }
 }
 </script>
