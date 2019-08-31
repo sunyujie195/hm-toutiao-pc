@@ -25,15 +25,8 @@
                 </el-form-item>
 
                 <el-form-item label="频道：">
-                    <!-- Select 选择器         clearable是清空选项-->
-                    <el-select v-model="reqParams.channel_id" placeholder="请选择" clearable>
-                        <el-option
-                        v-for="item in channelOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                        </el-option>
-                    </el-select>
+                  <!-- 这里使用封装的频道组件     父传子值 : v-model === :value @input-->
+                  <my-channel v-model="reqParams.channel_id"></my-channel>
                 </el-form-item>
 
                 <el-form-item label="日期：">
@@ -107,7 +100,7 @@
                     <!-- 增加width将操作列靠右边，其它列不加width让其自定义宽度 -->
                     <template slot-scope="scope">
                             <!-- plain定义朴素button -->
-                            <el-button type="primary" icon="el-icon-edit" circle plain></el-button>
+                            <el-button type="primary" icon="el-icon-edit" circle plain @click="$router.push('/publish?id='+scope.row.id)"></el-button>
                             <el-button type="danger" icon="el-icon-delete" @click="delArticle(scope.row.id)" circle plain></el-button>
                             <!-- 这里添加事件@click="delArticle(scope.row.id)"做删除功能传入id，上面插槽定义变量对象scope，下面要使用才行 -->
                     </template>
@@ -154,9 +147,6 @@ export default {
         per_page: 20 // 每一页的数量
       },
 
-      // 频道下拉框中的数据
-      channelOptions: [],
-
       // 日期数据=>格式数组 [起始日期，结束日期]
       dateArr: [],
 
@@ -176,14 +166,6 @@ export default {
   },
 
   methods: {
-    // 获取频道后台数据
-    async getchannelOptions () {
-      // 看api文档返回的最后的数据 => data.channels[ {id, name}]
-      // 使用 async & await 发送axios请求
-      const { data: { data } } = await this.$http.get('channels')
-      // 赋值给频道下拉框中的数据
-      this.channelOptions = data.channels
-    },
 
     // 获取表格中的文章列表
     async getarticleData () {
@@ -220,10 +202,10 @@ export default {
 
     // 点击筛选按钮触发事件
     search () {
-      // 1.频道选项,清空功能,清空之后的值是 "" 而不是null，所以要赋值
-      if (this.reqParams.channel_id === '') {
-        this.reqParams.channel_id = null
-      }
+      // // 1.频道选项,清空功能,清空之后的值是 "" 而不是null，所以要赋值 --- 让封装的子组件自己处理
+      // if (this.reqParams.channel_id === '') {
+      //   this.reqParams.channel_id = null
+      // }
       // 2.将页码重置为1
       this.reqParams.page = 1
       // 3.根据新条件筛选数据，去重新获取文章数据
