@@ -159,8 +159,6 @@ export default {
   },
 
   created () {
-    // 调用频道后台数据
-    this.getchannelOptions()
     // 调用文章列表数据
     this.getarticleData()
   },

@@ -16,11 +16,18 @@
 
       <!-- 图片列表 -->
       <div class="imgList">
-        <!-- 一张图片布局                   这里遍历一张图片时 in 10 表示遍历10次数-->
-        <div class="imgItem" v-for="item in 10" :key="item">
-            <img src="../../assets/images/avatar.jpg" alt="">
+        <!-- 一张图片布局   -->
+        <!-- 这里遍历一张图片时 in 10 表示遍历10次数
+            <div class="imgItem" v-for="item in 10" :key="item">
+            当获取到图片列表数据后，这里不再遍历次数，而是遍历拿到的数据 => 数组里包含对象
+            :key唯一标识指向对象，但是key必须是字符串或者number类型，所以取出id
+        -->
+        <div class="imgItem" v-for="item in imageData" :key="item.id">
+            <!-- 动态绑定：url表示图片地址 -->
+            <img :src="item.url" alt="">
             <div class="footer">
-                <span class="el-icon-star-off"></span>
+                <!-- class属性绑定：判断当前图片是否收藏,并将当前已经收藏的图片渲染出来-->
+                <span class="el-icon-star-off" :class="{red:item.is_collected}"></span>
                 <span class="el-icon-delete"></span>
             </div>
         </div>
@@ -42,7 +49,24 @@ export default {
         collect: false,
         page: 1,
         per_page: 10
-      }
+      },
+      // 图片列表数据
+      imageData: []
+    }
+  },
+
+  created () {
+    // 调用图片列表数据
+    this.getimageData()
+  },
+
+  methods: {
+    // 获取图片列表
+    async getimageData () {
+      // data.results 是图片列表
+      const { data: { data } } = await this.$http.get('user/images', { params: this.reqParams })
+      // 赋值给图片列表数据
+      this.imageData = data.results
     }
   }
 }
@@ -81,6 +105,9 @@ export default {
             text-align: center;
             span{
                 margin: 0 20px;
+                &.red{
+                    color:red
+                }
             }
         }
     }
