@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+    <!-- 给根标签该类名-供富文本编辑器样式使用 -->
+  <div class="publish-container">
     <el-card>
       <!-- 头部 -->
       <div slot="header">
@@ -13,7 +14,10 @@
           <el-input v-model="articleForm.title" style="width:400px"></el-input>
         </el-form-item>
 
-        <el-form-item label="内容：">富文本编辑器</el-form-item>
+        <el-form-item label="内容：">
+            <!-- 使用富文本编辑器的配置 -->
+            <quill-editor v-model="articleForm.content" :options="editorOption"></quill-editor>
+        </el-form-item>
 
         <el-form-item label="封面：">
           <!-- 单选框组 -->
@@ -45,7 +49,18 @@
 </template>
 
 <script>
+// 导入富文本编辑器的style样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+// 导入组件配置对象
+import { quillEditor } from 'vue-quill-editor'
+
 export default {
+  // 注册配置对象
+  components: { quillEditor },
+
   data () {
     return {
       // 提交给文章表单数据对象
@@ -59,7 +74,27 @@ export default {
           images: ''
         },
         channel_id: null
+      },
+
+      // 富文本配置对象
+      editorOption: {
+        // text占位符对象，目前null
+        placeholder: '',
+        // 配置对象
+        modules: {
+          // 工具栏(多个)
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            ['image']
+          ]
+
+        }
       }
+
     }
   }
 }
