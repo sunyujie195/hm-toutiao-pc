@@ -3,6 +3,9 @@ import Vue from 'vue'
 // 引入App根基组件
 import App from './App.vue'
 
+// 导入style文件
+import '@/styles/style.less'
+
 // 导入element-ui组件
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'

@@ -183,6 +183,8 @@ export default {
                 width: 30px;
                 height: 30px;
                 vertical-align:middle;
+                display: inline-block;
+                // 跟个人设置头像相冲突的解决办法
             }
             .name{
                 color:#333;

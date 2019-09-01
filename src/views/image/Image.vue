@@ -12,7 +12,40 @@
         <el-radio-button label="false">全部</el-radio-button>
         <el-radio-button label="true">收藏</el-radio-button>
       </el-radio-group>
-      <el-button type="success" size="small" style="float:right">添加素材</el-button>
+      <el-button type="success" size="small" style="float:right" @click="openDialog">添加素材</el-button>
+
+      <!---------------------------------- Dialog对话框组件布局
+        title表示标题
+        :visible.sync="dialogVisible" 动态绑定,dialogVisible默认为false-隐藏对话框，为true时，显示对话框
+      -->
+      <el-dialog title="添加素材" :visible.sync="dialogVisible" width="300px">
+        <!--------------------------------------------------------上传组件布局
+          1️⃣action--上传图片的接口地址,el-upload是element-ui提供的地址,接口地址需要完整地址。和axios的地址(只需要简短地址即可)
+              如果跟axios没有关系，再向后台上传图片时，请求头中不会携带token，所以不会成功
+          2️⃣自定义请求头headers（携带token）==> 对象：Authorization = Bearer ${store.getUser().token}
+          3️⃣show-file-list是显示文件列表
+          4️⃣on-success属性指定的函数作用：上传图片成功的钩子函数（回调函数）
+              ==> 上传成功后，获取图片的地址
+              ==> 这个函数的三个形参：function(response, file, fileList)
+          5️⃣v-if 和 v-else 的使用:
+              ==> imageUrl  接收上传成功之后的地址;有数据：预览;没数据：上传按钮
+          6️⃣name  是指定上传文件数据的字段名称，和接口保持一致
+        -->
+        <el-upload
+          class="avatar-uploader"
+          action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+          :headers="headers"
+          :show-file-list="false"
+          :on-success="handleSuccess"
+          name="image"
+        >
+          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+        </div>
+      </el-dialog>
 
       <!-- 图片列表 -->
       <div class="imgList">
@@ -55,6 +88,12 @@
 </template>
 
 <script>
+// 导入store模块,供请求头使用
+import store from '@/store'
+
+// 导入全局style样式
+import '../../styles/style.css'
+
 export default {
   data () {
     return {
@@ -70,7 +109,19 @@ export default {
       imageData: [],
 
       // 图片总张数(最开始没有数据)
-      total: 0
+      total: 0,
+
+      // 声明对话框的显示与隐藏(默认为false-隐藏对话框)
+      dialogVisible: false,
+
+      // 动态绑定 请求头 声明
+      headers: {
+        Authorization: `Bearer ${store.getUser().token}`
+      },
+
+      // 预览图的地址 -- 上传成功后再切换到图片
+      imageUrl: null
+
     }
   },
 
@@ -134,6 +185,33 @@ export default {
       }).catch(() => {
         //  取消删除
       })
+    },
+
+    // 打开 对话框 触发事件
+    openDialog () {
+      // 可以在绑定click后面写表达式
+      this.dialogVisible = true
+      // 清空预览图
+      this.imageUrl = null
+    },
+
+    // 上传图片成功函数
+    handleSuccess (res) {
+      // 成功后提示
+      this.$message.success('上传图片成功')
+      // 获取后台给的地址，赋值给imageUrl
+      /* console.log(res) // {message: "OK", data: {…}} -- 所以res.data.data.url这是axios方式拿到的图片地址
+      但是现在是res.data.url就是图片地址,res是响应主体 */
+      this.imageUrl = res.data.url
+      // 定时器 2秒后
+      window.setTimeout(() => {
+        // 关闭对话框
+        this.dialogVisible = false
+        // 更新图片列表
+        this.getimageData()
+        // 让每次点击按钮筛选后，页码都重置到1
+        this.reqParams.page = 1
+      }, 2000)
     }
 
   }
