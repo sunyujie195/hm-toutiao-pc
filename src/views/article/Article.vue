@@ -128,11 +128,11 @@
 
 <script>
 // 引入myBread组件
-import MyBread from '@/components/my-bread.vue'
-
+// import MyBread from '@/components/my-bread.vue'
+/* 内容管理的面包屑myBread组件已经全局在components/index.js中，不需要再导入组件注册 */
 export default {
   // 注册组件
-  components: { MyBread },
+  // components: { MyBread },
 
   data () {
     return {

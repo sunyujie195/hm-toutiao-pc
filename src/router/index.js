@@ -29,6 +29,9 @@ import Test from '@/views/test/index.vue'
 // 引入image组件
 import Image from '@/views/image/Image.vue'
 
+// 引入publish组件
+import Publish from '@/views/publish/Publish.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -54,7 +57,9 @@ const router = new VueRouter({
         // 内容管理路由
         { path: '/article', name: 'article', component: Article },
         // 素材管理路由
-        { path: '/image', name: 'image', component: Image }
+        { path: '/image', name: 'image', component: Image },
+        // 发布文章路由
+        { path: '/publish', name: 'publish', component: Publish }
       ]
     },
     // 404页面，path是*意思是，当所有页面都有错误时，才会走404页面
