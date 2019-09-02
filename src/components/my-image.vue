@@ -54,7 +54,29 @@
           ></el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="上传图片" name="upload">上传图片内容</el-tab-pane>
+        <el-tab-pane label="上传图片" name="upload">
+          <!-----------------------------上传图片组件
+              1️⃣action--上传图片的接口地址,el-upload是element-ui提供的地址,接口地址需要完整地址。和axios的地址(只需要简短地址即可)
+                  如果跟axios没有关系，再向后台上传图片时，请求头中不会携带token，所以不会成功
+              2️⃣自定义请求头headers（携带token）==> 对象：Authorization = Bearer ${store.getUser().token}
+              3️⃣show-file-list是显示文件列表
+              4️⃣on-success属性指定的函数作用：上传图片成功的钩子函数（回调函数）
+                  ==> 上传成功后，获取图片的地址
+                  ==> 这个函数的三个形参：function(response, file, fileList)
+              5️⃣v-if 和 v-else 的使用:
+                  ==> imageUrl  接收上传成功之后的地址;有数据：预览;没数据：上传按钮
+              6️⃣name  是指定上传文件数据的字段名称，和接口保持一致   -->
+        <el-upload
+          class="avatar-uploader"
+          action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+          :headers="headers"
+          :show-file-list="false"
+          :on-success="handleSuccess"
+          name="image">
+          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+        </el-tab-pane>
 
       </el-tabs>
 
@@ -70,6 +92,9 @@
 </template>
 
 <script>
+// // 导入store模块,供请求头使用
+import store from '@/store'
+
 export default {
   // 在组件里定义一个name属性，给组件取名称，供全局调用
   name: 'my-image',
@@ -97,11 +122,16 @@ export default {
       // 图片总张数(最开始没有数据)
       total: 0,
 
-      // 预览图的地址 -- 上传成功后再切换到图片
-      imageUrl: null,
-
       // 记录选中图片的url地址
-      selectedImageUrl: null
+      selectedImageUrl: null,
+
+      // 上传图片请求头声明(携带token)
+      headers: {
+        Authorization: `Bearer ${store.getUser().token}`
+      },
+
+      // 预览图的地址 -- 上传成功后再切换到图片
+      imageUrl: null
     }
   },
 
@@ -143,6 +173,16 @@ export default {
     selectedImage (url) {
       // 点击当前选中的图片地址，赋值给url
       this.selectedImageUrl = url
+    },
+
+    // 上传图片成功函数
+    handleSuccess (res) {
+      // 成功后提示
+      this.$message.success('上传图片成功')
+      // 获取后台给的地址，赋值给imageUrl,就可以预览效果
+      /* console.log(res) // {message: "OK", data: {…}} -- 所以res.data.data.url这是axios方式拿到的图片地址
+      但是现在是res.data.url就是图片地址,res是响应主体 */
+      this.imageUrl = res.data.url
     }
 
   }
