@@ -28,8 +28,8 @@
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
 
-          <!-- 使用封装的上传组件 -->
-          <my-image></my-image>
+          <!-- 使用封装的对话框组件    v-model双向绑定使用-->
+          <my-image v-model="test"></my-image>
 
         </el-form-item>
 
@@ -63,6 +63,9 @@ export default {
 
   data () {
     return {
+      // 声明test,提供将来要传入的数据，默认为空 -- 给组件内部传入空字符数据
+      test: '',
+
       // 提交给文章表单数据对象
       articleForm: {
         title: '',

@@ -1,11 +1,12 @@
-// 封面上传图片组件的封装
+// 封装--封面 对话框 组件
 
 <template>
   <div class="img-container">
 
     <!-- 选择封面的图片按钮 -->
     <div class="imgBtn" @click="openDialog">
-      <img :src="confirmSrc" alt />
+      <!-- 父组件传入地址背后的图片，在这里显示，若传入为空字符，就显示默认图 -->
+      <img :src="value || defaultImage" alt />
     </div>
 
     <!--------------------------------------------------- 对话框Dialog  -->
@@ -102,6 +103,9 @@ export default {
   // 在组件里定义一个name属性，给组件取名称，供全局调用
   name: 'my-image',
 
+  // 子组件内部props接收数据==value是父组件传入的图片地址
+  props: ['value'],
+
   data () {
     return {
       // 对话框的显示与隐藏（默认隐藏false）
@@ -137,8 +141,9 @@ export default {
       uploadImageUrl: null,
 
       // 声明 图片按钮：默认图src地址
-      confirmSrc: defaultImage
-
+      // confirmSrc: defaultImage
+      // 默认图数据
+      defaultImage
     }
   },
 
@@ -199,7 +204,7 @@ export default {
       this.uploadImageUrl = res.data.url
     },
 
-    // click确定按钮 -- 判断用的是什么图
+    // click确定图片 -- 判断用的是什么图
     confirmImage () {
       // 定义一个为空的url地址
       let url = null
@@ -214,8 +219,12 @@ export default {
         // 接收对应的上传图片的url地址
         url = this.uploadImageUrl
       }
+
       // 给图片按钮的src地址 赋值
-      this.confirmSrc = url
+      // this.confirmSrc = url
+      // 将确定的地址传给父组件
+      this.$emit('input', url)
+
       // 关闭对话框
       this.dialogVisible = false
     }
