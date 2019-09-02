@@ -234,6 +234,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.img-container{
+  // inline-block行内块：一行显示多个，可设宽高
+  display: inline-block;
+  margin-right: 20px;
+}
 // 图片按钮样式
 .imgBtn{
     width: 160px;
