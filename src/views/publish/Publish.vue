@@ -49,8 +49,8 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary">发表</el-button>
-          <el-button>存入草稿</el-button>
+          <el-button type="primary" @click="submit(false)">发表</el-button>
+          <el-button @click="submit(true)">存入草稿</el-button>
         </el-form-item>
 
       </el-form>
@@ -84,7 +84,7 @@ export default {
         // 封面
         cover: {
           type: 1,
-          images: ''
+          images: []
         },
         channel_id: null
       },
@@ -116,7 +116,18 @@ export default {
     changeType () {
       // 让选中的图片都为空
       this.articleForm.cover.images = []
+    },
+
+    // 点击 发表 或 存入草稿 按钮 事件 == 发送axios请求
+    async submit (draft) {
+      // draft: true 为草稿; false为发表  而且是Query方式传参 表示 在地址url?的后面传参
+      await this.$http.post(`articles?draft=${draft}`, this.articleForm)
+      // 发送成功的提示 == [三元运算表达式]
+      this.$message.success(draft ? '存入草稿成功' : '发表成功')
+      // 成功后跳转到内容管理页面
+      this.$router.push('/article')
     }
+
   }
 }
 </script>
