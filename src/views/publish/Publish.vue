@@ -27,10 +27,10 @@
             <el-radio :label="0">无图</el-radio>
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
-          <!-- 选择封面的图片按钮 -->
-          <div class="imgBtn">
-              <img src="../../assets/images/default.png" alt="">
-          </div>
+
+          <!-- 使用封装的上传组件 -->
+          <my-image></my-image>
+
         </el-form-item>
 
         <el-form-item label="频道：">
@@ -101,15 +101,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.imgBtn{
-    width: 160px;
-    height: 160px;
-    border: 1px dashed #ddd;
-    img{
-        width: 100%;
-        height: 100%;
-        // 让后面的三图成块元素独占一行
-        display: block;
-    }
-}
 </style>
