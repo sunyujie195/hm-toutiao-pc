@@ -24,8 +24,15 @@
             <!-- 这里遍历一张图片时 in 10 表示遍历10次数
                 <div class="imgItem" v-for="item in 10" :key="item">
                 当获取到图片列表数据后，这里不再遍历次数，而是遍历拿到的数据 => 数组里包含对象
-                :key唯一标识指向对象，但是key必须是字符串或者number类型，所以取出id -->
-            <div class="imgItem" v-for="item in imageData" :key="item.id">
+                :key唯一标识指向对象，但是key必须是字符串或者number类型，所以取出id
+                click选中的图片事件传参：传入后台原本的图片url
+                表达式判断 :class="{selected:item.url===selectedImageUrl}"：
+                  ==>class属性动态绑定：在click就有添加selected类名的照片的url地址 和 后台提交列表中的图片url地址 是否一致-->
+            <div class="imgItem"
+              v-for="item in imageData"
+              :key="item.id"
+              @click="selectedImage(item.url)"
+              :class="{selected:item.url===selectedImageUrl}">
               <!-- 动态绑定：url表示图片地址 -->
               <img :src="item.url" alt />
             </div>
@@ -91,7 +98,10 @@ export default {
       total: 0,
 
       // 预览图的地址 -- 上传成功后再切换到图片
-      imageUrl: null
+      imageUrl: null,
+
+      // 记录选中图片的url地址
+      selectedImageUrl: null
     }
   },
 
@@ -127,6 +137,12 @@ export default {
       // 将改变的页码重新赋值给页码数据，然后更新图片列表
       this.reqParams.page = newPage
       this.getimageData()
+    },
+
+    // 点击选中的图片触发事件 -- 传入后台url为图片唯一标识，渲染显示图片
+    selectedImage (url) {
+      // 点击当前选中的图片地址，赋值给url
+      this.selectedImageUrl = url
     }
 
   }
@@ -166,6 +182,19 @@ export default {
         margin-bottom: 10px;
         // 子绝父相
         position: relative;
+        &.selected{
+          &::after{
+            // .imgItem.selected:::after 给图片做选中效果
+            content:'';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3) url(../assets/images/selected.png) no-repeat center / 50px;
+          }
+        }
+
         img{
             width: 100%;
             height: 100%;
