@@ -5,7 +5,7 @@
 
     <!-- 选择封面的图片按钮 -->
     <div class="imgBtn" @click="openDialog">
-      <img src="../assets/images/default.png" alt />
+      <img :src="confirmSrc" alt />
     </div>
 
     <!--------------------------------------------------- 对话框Dialog  -->
@@ -73,7 +73,7 @@
           :show-file-list="false"
           :on-success="handleSuccess"
           name="image">
-          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <img v-if="uploadImageUrl" :src="uploadImageUrl" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
         </el-tab-pane>
@@ -83,7 +83,7 @@
       <!-- 底部按钮 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="confirmImage">确 定</el-button>
       </span>
 
     </el-dialog>
@@ -92,8 +92,11 @@
 </template>
 
 <script>
-// // 导入store模块,供请求头使用
+// 导入store模块,供请求头使用
 import store from '@/store'
+
+// 导入默认图
+import defaultImage from '../assets/images/default.png'
 
 export default {
   // 在组件里定义一个name属性，给组件取名称，供全局调用
@@ -131,7 +134,11 @@ export default {
       },
 
       // 预览图的地址 -- 上传成功后再切换到图片
-      imageUrl: null
+      uploadImageUrl: null,
+
+      // 声明 图片按钮：默认图src地址
+      confirmSrc: defaultImage
+
     }
   },
 
@@ -139,6 +146,12 @@ export default {
     // 打开 对话框 触发事件
     openDialog () {
       this.dialogVisible = true
+
+      //  重置清空选中的图片数据
+      this.activeName = 'image'
+      this.selectedImageUrl = null
+      this.uploadImageUrl = null
+
       // 获取图片列表数据
       this.getimageData()
     },
@@ -179,10 +192,32 @@ export default {
     handleSuccess (res) {
       // 成功后提示
       this.$message.success('上传图片成功')
+
       // 获取后台给的地址，赋值给imageUrl,就可以预览效果
       /* console.log(res) // {message: "OK", data: {…}} -- 所以res.data.data.url这是axios方式拿到的图片地址
       但是现在是res.data.url就是图片地址,res是响应主体 */
-      this.imageUrl = res.data.url
+      this.uploadImageUrl = res.data.url
+    },
+
+    // click确定按钮 -- 判断用的是什么图
+    confirmImage () {
+      // 定义一个为空的url地址
+      let url = null
+
+      if (this.activeName === 'image') { // 使用selectedImageUrl
+        // 如果没有选择图片，就确定- 提示
+        if (!this.selectedImageUrl) return this.$message.info('请选择素材图片')
+        // 接收对应的素材库选中图片的url地址
+        url = this.selectedImageUrl
+      } else { // 使用uploadImageUrl
+        if (!this.uploadImageUrl) return this.$message.info('请上传图片')
+        // 接收对应的上传图片的url地址
+        url = this.uploadImageUrl
+      }
+      // 给图片按钮的src地址 赋值
+      this.confirmSrc = url
+      // 关闭对话框
+      this.dialogVisible = false
     }
 
   }
