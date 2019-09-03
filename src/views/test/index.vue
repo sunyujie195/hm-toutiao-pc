@@ -9,9 +9,9 @@
         <!-- <com-a>烈火军校</com-a> -->
         <!-- <com-a>九州缥缈录</com-a> -->
 
-        <com-a>
+        <!-- <com-a> -->
             <!-- 使用组件时，没有传入内容，会使用slot中的默认内容，备用内容 -->
-        </com-a>
+        <!-- </com-a> -->
 
         <!-- <com-a>
             <div slot="header">吕归尘</div>
@@ -19,28 +19,39 @@
             <div slot="footer">帕苏尔</div>
         </com-a> -->
 
-        <com-a><div slot="div" slot-scope="scope">{{scope.msg}}---{{scope.list}}</div></com-a>
+        <!-- <com-a><div slot="div" slot-scope="scope">{{scope.msg}}---{{scope.list}}</div></com-a> -->
         <!--  slot-scope="scope" 是接收作用域插槽上所有绑定的数据，数据的集合名字叫scope对象{msg:'',list:''}
 
             slot="div" 指定插槽名称
             在vue版本 2.6.0 之后提供了新的写法  v-slot:插槽名称="作用域数据对象"
             注意：v-slot必须写在 template 标签中
         -->
-        <hr>
-        <com-a>
+        <!-- <hr> -->
+        <!-- <com-a>
             <template v-slot:div="scope">{{scope.msg}}---{{scope.list}}</template>
-        </com-a>
+        </com-a> -->
+
+        <!-- 使用--非父子传值测试(A.vue组件和B.vue组件) -->
+        <com-a></com-a>
+        <hr>
+        <com-b></com-b>
 
     </div>
 </template>
 
 <script>
 // 1️⃣引入Test.vue组件
-import ComA from './com-a.vue'
+// import ComA from './com-a.vue'
+
+import ComA from './A'
+import ComB from './B'
 
 export default {
   // 2️⃣私有注册
-  components: { ComA }
+  components: {
+    ComA,
+    ComB
+  }
 
   // async created () {
   //   // 1. 使用promise 调用A接口后调用B接口获取所有的数据
