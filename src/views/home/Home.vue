@@ -96,6 +96,9 @@
 // 引入store模块
 import store from '@/store'
 
+// 导入eventBus.js
+import eventBus from '@/eventBus.js'
+
 export default {
   // 声明数据：让导航菜单默认展开
   data () {
@@ -111,6 +114,11 @@ export default {
     const user = store.getUser()
     this.name = user.name
     this.photo = user.photo
+    // 接收绑定数据name值
+    eventBus.$on('updateName', (name) => {
+      // 接收的name 赋值给 原来的用户name
+      this.name = name
+    })
   },
 
   methods: {
