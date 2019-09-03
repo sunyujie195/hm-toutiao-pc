@@ -35,6 +35,9 @@ import Publish from '@/views/publish/Publish.vue'
 // 引入comment组件
 import Comment from '@/views/comment/Comment.vue'
 
+// 引入setting组件
+import Setting from '@/views/setting/Setting.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -64,7 +67,9 @@ const router = new VueRouter({
         // 发布文章路由
         { path: '/publish', name: 'publish', component: Publish },
         // 评论管理路由
-        { path: '/comment', name: 'comment', component: Comment }
+        { path: '/comment', name: 'comment', component: Comment },
+        // 个人设置路由
+        { path: '/setting', name: 'setting', component: Setting }
       ]
     },
     // 404页面，path是*意思是，当所有页面都有错误时，才会走404页面

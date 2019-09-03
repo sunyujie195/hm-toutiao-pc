@@ -31,7 +31,7 @@
             <template v-slot:div="scope">{{scope.msg}}---{{scope.list}}</template>
         </com-a> -->
 
-        <!-- 使用--非父子传值测试(A.vue组件和B.vue组件) -->
+        <!-- 使用--非父子(A.vue组件和B.vue组件)传值测试 -->
         <com-a></com-a>
         <hr>
         <com-b></com-b>
