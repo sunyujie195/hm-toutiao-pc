@@ -5,7 +5,7 @@
       <!-- 头部 -->
       <div slot="header">
         <!-- 使用封装的面包屑组件 -->
-        <my-bread>发布文章</my-bread>
+        <my-bread>{{articleId ? '修改' : '发布'}}文章</my-bread>
       </div>
 
       <!--------------------------- 表单 -->
@@ -48,9 +48,15 @@
           <my-channel v-model="articleForm.channel_id"></my-channel>
         </el-form-item>
 
-        <el-form-item>
+        <el-form-item v-if="!this.articleId">
+          <!-- 如果没有id，是发表文章 -->
           <el-button type="primary" @click="submit(false)">发表</el-button>
           <el-button @click="submit(true)">存入草稿</el-button>
+        </el-form-item>
+        <el-form-item v-else>
+          <!-- 否则是编辑文章 -->
+          <el-button type="success" @click="editor(false)">编辑</el-button>
+          <el-button @click="editor(true)">存入草稿</el-button>
         </el-form-item>
 
       </el-form>
@@ -73,6 +79,9 @@ export default {
 
   data () {
     return {
+      // 声明一个编辑文章时的id
+      articleId: null,
+
       // 声明test,提供将来要传入的数据，默认为空 -- 给组件内部传入空字符数据
       // test: '',
 
@@ -111,6 +120,47 @@ export default {
     }
   },
 
+  // 使用侦听器：监听 $route.query.id 的变化，然后 重置表单、清空文章id的数据
+  watch: {
+    '$route.query.id': function (newVal, oldVal) {
+      console.log(newVal, oldVal) // 当编辑文章跳转到发布文章时触发
+      // 当发布文章变成编辑文章 => 回退历史记录
+      if (newVal) {
+        // 判断 articleId 是否存在，存在就编辑; 不存在就发表
+        this.articleId = this.$route.query.id
+        if (this.articleId) {
+          // 如果有ID，就获取文章数据，以填充文章
+          this.getArticle()
+        }
+        return false
+      }
+
+      // 当编辑文章变成发布文章
+      this.articleForm = { // 拿到默认数据
+        title: '',
+        content: '',
+        cover: {
+          type: 1,
+          images: []
+        },
+        channel_id: null
+      }
+      // 清空文章id的数据
+      this.articleId = null
+    }
+  },
+
+  // 组件初始化时 判断是否有id
+  created () {
+    // this.$router.query.id 是query方式的接收参数id ===> 拿的是地址栏的ID
+    this.articleId = this.$route.query.id
+    // 拿到ID再判断是否有id。有ID是编辑文章;没有id是发表文章
+    if (this.articleId) {
+      // 如果有ID，就获取文章数据，以填充文章
+      this.getArticle()
+    }
+  },
+
   methods: {
     // 改变radio按钮组事件
     changeType () {
@@ -122,6 +172,22 @@ export default {
     async submit (draft) {
       // draft: true 为草稿; false为发表  而且是Query方式传参 表示 在地址url?的后面传参
       await this.$http.post(`articles?draft=${draft}`, this.articleForm)
+      // 发送成功的提示 == [三元运算表达式]
+      this.$message.success(draft ? '存入草稿成功' : '发表成功')
+      // 成功后跳转到内容管理页面
+      this.$router.push('/article')
+    },
+
+    // 获取文章数据
+    async getArticle () {
+      const { data: { data } } = await this.$http.get('articles/' + this.articleId) // 获取指定文章api需要id
+      // 数据填充文章
+      this.articleForm = data
+    },
+
+    // 编辑文章发送请求
+    async editor (draft) {
+      await this.$http.put(`articles/${this.articleId}?draft=${draft}`, this.articleForm)
       // 发送成功的提示 == [三元运算表达式]
       this.$message.success(draft ? '存入草稿成功' : '发表成功')
       // 成功后跳转到内容管理页面
