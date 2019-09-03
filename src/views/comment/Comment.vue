@@ -19,8 +19,8 @@
         </el-table-column>
         <el-table-column label="操作" width="120px">
             <template slot-scope="scope">
-                <el-button type="danger" size="small" v-if="scope.row.comment_status">关闭评论</el-button>
-                <el-button type="success" size="small" v-else>打开评论</el-button>
+                <el-button type="danger" size="small" v-if="scope.row.comment_status" @click="toggleStatus(scope.row)">关闭评论</el-button>
+                <el-button type="success" size="small" v-else @click="toggleStatus(scope.row)">打开评论</el-button>
             </template>
         </el-table-column>
       </el-table>
@@ -32,10 +32,8 @@
         :total="total"
         :page-size="reqParams.per_page"
         :current-page="reqParams.page"
-        @current-change="changePager"
-        hide-on-single-page
-        >
-      </el-pagination>
+        @current-change="changePage"
+        ></el-pagination>
 
     </el-card>
   </div>
@@ -77,15 +75,31 @@ export default {
     },
 
     // 改变页码触发事件函数
-    changePager (newPage) {
-      // 将改变的页码重新赋值给页码数据，然后更新列表
-      this.reqParams.page = newPage
+    changePage (num) {
+      // 将改变的页码重新赋值给页码数据，然后更新文章列表
+      this.reqParams.page = num
       this.getComments()
+    },
+
+    // 切换文章的评论状态 -- row表示当前行
+    async toggleStatus (row) {
+      // allow_comment 是否允许评论
+      // !row.comment_status 取反是因为 评论状态 和 操作栏的按钮allow_comment 操作状态相反
+      const { data: { data } } = await this.$http.put(`comments/status?article_id=${row.id}`, { allow_comment: !row.comment_status })
+      // 成功后提示  更新列表（局部更新  修改当前行数据中的状态）
+      this.$message.success(data.allow_comment ? '打开评论成功' : '关闭评论成功')
+      // 更新列表（局部更新  修改的当前行数据状态与后台返回数据状态要一致）
+      row.comment_status = data.allow_comment
     }
+
   }
 
 }
 </script>
 
 <style lang="less" scoped>
+.el-pagination{
+    text-align: center;
+    margin-top: 30px;
+}
 </style>
