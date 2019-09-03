@@ -17,7 +17,7 @@
               <el-input v-model="userInfo.name"></el-input>
             </el-form-item>
             <el-form-item label="媒体介绍：">
-              <el-input v-model="userInfo.intro"></el-input>
+              <el-input v-model="userInfo.intro" type="textarea" :rows="3"></el-input>
             </el-form-item>
             <el-form-item label="邮箱：">
               <el-input v-model="userInfo.email"></el-input>
@@ -30,7 +30,13 @@
 
         <el-col :span="12">
           <!-- 用户头像 -->
-          <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false">
+          <el-upload
+            class="avatar-uploader"
+            action=""
+            :show-file-list="false"
+            :http-request="upload"
+            >
+            <!-- http-request 是自定义上传行为 -->
             <!-- userInfo.photo拿到后台头像数据，做预览效果 -->
             <img v-if="userInfo.photo" :src="userInfo.photo" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -73,7 +79,7 @@ export default {
     // 获取用户个人信息
     async getUserInfo () {
       const { data: { data } } = await this.$http.get('user/profile')
-      console.log(data)
+      // console.log(data)
       // 此时的data就是用户数据,填充表单数据
       this.userInfo = data
     },
@@ -96,6 +102,33 @@ export default {
 
       // 更新Home组件--用户名 ==> 触发传递数据name值
       eventBus.$emit('updateName', name)
+    },
+
+    // 选择图片后触发事件
+    async upload (reslut) {
+      // console.log(reslut)// {id: 1, name: "熬", intro: "如了。", photo: "http://t", email: "第三m",}
+      // 1. 获取文件对象
+      const file = reslut.file
+
+      // 2. 使用 formData 追加文件数据
+      // 2.1实例FormData对象
+      const formData = new FormData()
+      // 2.2 追加
+      formData.append('photo', file)
+
+      // 3. 使用axios发请求
+      // 3.1 后台返回的photo数据 是 头像地址
+      const { data: { data } } = await this.$http.patch('user/photo', formData)
+      // 3.2 提示
+      this.$message.success('修改头像成功')
+      // 3.3 预览头像
+      this.userInfo.photo = data.photo
+      // 3.4 更新本地存储头像
+      const localUser = store.getUser()
+      localUser.photo = data.photo
+      store.setUser(localUser)
+      // 3.5 更新Home组件头像
+      eventBus.$emit('updatePhoto', data.photo)
     }
   }
 }
