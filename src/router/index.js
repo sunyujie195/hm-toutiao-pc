@@ -38,6 +38,9 @@ import Comment from '@/views/comment/Comment.vue'
 // 引入setting组件
 import Setting from '@/views/setting/Setting.vue'
 
+// 引入fans组件
+import Fans from '@/views/fans/Fans.vue'
+
 // 注册router
 Vue.use(VueRouter)
 
@@ -69,7 +72,9 @@ const router = new VueRouter({
         // 评论管理路由
         { path: '/comment', name: 'comment', component: Comment },
         // 个人设置路由
-        { path: '/setting', name: 'setting', component: Setting }
+        { path: '/setting', name: 'setting', component: Setting },
+        // 粉丝管理路由
+        { path: '/fans', name: 'fans', component: Fans }
       ]
     },
     // 404页面，path是*意思是，当所有页面都有错误时，才会走404页面
